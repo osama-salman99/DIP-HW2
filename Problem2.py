@@ -12,16 +12,22 @@ def part_a():
 
 def part_b():
     ft = fft.fft2(original_image)
-    magnitude = get_shifted_image_magnitude(ft)
+    magnitude = np.abs(ft)
+    shifted_magnitude = get_shifted_image_magnitude(ft)
 
-    show_image_and_wait('Image Magnitude', magnitude)
+    show_image_and_wait('Image Magnitude', shifted_magnitude)
 
-    return ft, magnitude
+    return ft, np.abs(magnitude)
 
 
 def part_c():
-    total_Power = np.sum(image_magnitude ** 2)
-    print(f'total power = {total_Power.round(2)}')
+    total_power = np.sum(image_magnitude ** 2)
+    dc_power = image_magnitude[0, 0]
+    percentage = ((dc_power / total_power) * 100)
+
+    print(f'total power = {total_power.round(2)}')
+    print(f'DC power component = {dc_power}')
+    print(f'The DC power component is {percentage}% of the total power.')
 
 
 def part_d():
