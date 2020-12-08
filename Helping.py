@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 from PIL import Image
+from numpy import fft
 
 
 def read_GIF(path: str):
@@ -55,3 +56,57 @@ def c_inverse_log(image: np.ndarray):
 def c_linear(image: np.ndarray):
     # noinspection PyArgumentList
     return 255 / image.max()
+
+
+def get_shifted_image_magnitude(ft):
+    scaled = log_scale_image(ft)
+    shifted = fft.fftshift(scaled)
+    return shifted
+
+
+def log_scale_image(image):
+    image = abs(image)
+    log_image = np.log(image + 1)
+    linear_image = linear_scale_image(log_image)
+    return linear_image
+
+
+def linear_scale_image(image):
+    image -= image.min()
+    image = c_linear(image) * image
+    return image
+
+
+def show_image_and_wait(image, label='image'):
+    cv2.imshow(label, image.astype('uint8'))
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+
+def get_middle(image: np.ndarray):
+    height, width = image.shape[0:2]
+    return (height - 1) / 2, (width - 1) / 2
+
+
+def get_dft_components(ft: np.ndarray):
+    magnitude = fft.fftshift(np.abs(ft))
+    phase = np.arctan2(ft.imag, ft.real)
+
+    return magnitude, phase
+
+
+def zero_pad_image(image: np.ndarray):
+    height, width = image.shape[:2]
+    padded_image = np.pad(image, ((0, height), (0, width)), 'constant', constant_values=(0, 0))
+    return padded_image
+
+
+def remove_zero_padding(image: np.ndarray):
+    height, width = image.shape[:2]
+    return image[: height // 2, :width // 2]
+
+
+def get_inverse_ft(shifted_magnitude, phase):
+    original_magnitude = fft.fftshift(shifted_magnitude)
+    ift_image = np.real(fft.ifft2(original_magnitude * np.exp(1j * phase)))
+    return ift_image
