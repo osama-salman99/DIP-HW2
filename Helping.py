@@ -85,7 +85,7 @@ def show_image_and_wait(image, label='image'):
 
 def get_middle(image: np.ndarray):
     height, width = image.shape[0:2]
-    return (height - 1) / 2, (width - 1) / 2
+    return height / 2, width / 2
 
 
 def get_dft_components(ft: np.ndarray):
