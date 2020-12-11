@@ -1,12 +1,11 @@
 from Helping import *
-from numpy import fft
 
 CAMERAMAN_NOISY_PATH = 'res/cameramanNoisy.gif'
 CAMERAMAN_ORIGINAL_PATH = 'res/cameraman.gif'
 
 
 def part_a():
-    lowpass_filter_mask = ideal_lowpass_filter(magnitude, 220)
+    lowpass_filter_mask = ideal_lowpass_filter(magnitude, 228)
     evaluate_filter(lowpass_filter_mask, 'ideal lowpass filter')
 
 
@@ -42,7 +41,7 @@ def evaluate_filter(filter_mask, filter_name):
 
 def ideal_notch_reject_filter(image, centers, radii):
     middle_y, middle_x = get_middle(image)
-    i, j = np.indices(magnitude.shape, sparse=True)
+    i, j = np.indices(magnitude.shape)
     filter_mask = np.ones(magnitude.shape)
     for center, radius in zip(centers, radii):
         y, x = center
