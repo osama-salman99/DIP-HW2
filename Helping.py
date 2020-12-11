@@ -89,10 +89,10 @@ def get_middle(image: np.ndarray):
 
 
 def get_dft_components(ft: np.ndarray):
-    magnitude = fft.fftshift(np.abs(ft))
+    shifted_magnitude = fft.fftshift(np.abs(ft))
     phase = np.arctan2(ft.imag, ft.real)
 
-    return magnitude, phase
+    return shifted_magnitude, phase
 
 
 def zero_pad_image(image: np.ndarray):

@@ -10,10 +10,10 @@ MIN_OUTPUT_PATH = 'out/min_filter.png'
 f16_original = read_GIF(F16_ORIGINAL_PATH)
 f16_noisy = read_GIF(F16_NOISY_PATH)
 
-f16_median = cv2.medianBlur(f16_noisy.astype('uint8'), 3)
-kernel = np.ones((3, 3), np.uint8)
-f16_max = cv2.dilate(f16_noisy.astype('uint8'), kernel)
+kernel = np.ones((3, 3), 'uint8')
 f16_min = cv2.erode(f16_noisy.astype('uint8'), kernel)
+f16_max = cv2.dilate(f16_noisy.astype('uint8'), kernel)
+f16_median = cv2.medianBlur(f16_noisy.astype('uint8'), 3)
 
 print(f'PSNR for minimum filter mask = {PSNR(f16_original, f16_min)}')
 print(f'PSNR for maximum filter mask = {PSNR(f16_original, f16_max)}')
