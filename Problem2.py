@@ -15,6 +15,7 @@ def part_b():
 
     log_scaled_magnitude = log_scale_image(magnitude)
     show_image_and_wait(log_scaled_magnitude, 'Image Magnitude')
+    cv2.imwrite('out/Image Magnitude.png', log_scaled_magnitude)
 
     return ft, magnitude, phase
 
@@ -33,11 +34,13 @@ def part_d():
     phase_inverse = np.real(fft.ifft2(np.exp(1j * image_phase)))
     scaled = linear_scale_image(phase_inverse)
     show_image_and_wait(scaled, 'Phase Component')
+    cv2.imwrite('out/Phase Component.png', scaled)
 
 
 def part_e():
     reconstructed_phase = get_inverse_ft(image_magnitude, 0.1j * image_phase)
     show_image_and_wait(reconstructed_phase, 'Reconstructed Phase')
+    cv2.imwrite('out/Reconstructed Phase.png', reconstructed_phase)
 
 
 original_image = part_a()
