@@ -12,7 +12,6 @@ def part_a():
 def part_b():
     ft = fft.fft2(original_image)
     magnitude, phase = get_dft_components(ft)
-
     log_scaled_magnitude = log_scale_image(magnitude)
     show_image_and_wait(log_scaled_magnitude, 'Image Magnitude')
     cv2.imwrite('out/Image Magnitude.png', log_scaled_magnitude)
@@ -21,7 +20,7 @@ def part_b():
 
 
 def part_c():
-    total_power = np.sum(np.real(image_ft) ** 2 + np.imag(image_ft) ** 2)
+    total_power = np.sum(image_magnitude ** 2)
     dc_power = np.real(image_ft[0, 0]) ** 2
     percentage = ((dc_power / total_power) * 100)
 

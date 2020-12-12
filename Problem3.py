@@ -1,12 +1,11 @@
 from Helping import *
-from numpy import fft
 
 CAMERAMAN_NOISY_PATH = 'res/cameramanNoisy.gif'
 CAMERAMAN_ORIGINAL_PATH = 'res/cameraman.gif'
 
 
 def part_a():
-    lowpass_filter_mask = ideal_lowpass_filter(magnitude, 220)
+    lowpass_filter_mask = ideal_lowpass_filter(magnitude, 228)
     evaluate_filter(lowpass_filter_mask, 'ideal lowpass filter')
 
 
