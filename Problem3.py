@@ -13,7 +13,7 @@ def part_a():
 def part_b():
     notches_centers = ((411, 307), (307, 411), (102, 819), (205, 921), (0, 922), (102, 1023))
     notches_radii = (10, 10, 5, 5, 5, 5)
-    notch_filter_mask = ideal_notch_reject_filter(magnitude, notches_centers, notches_radii)
+    notch_filter_mask = ideal_notch_reject_filters(magnitude, notches_centers, notches_radii)
     evaluate_filter(notch_filter_mask, 'ideal notch-reject filter')
 
 
@@ -37,27 +37,41 @@ def evaluate_filter(filter_mask, filter_name):
     cv2.imwrite(f'out/{filter_name} magnitude.png', filtered_magnitude_scaled)
     cv2.imwrite(f'out/{filter_name} image.png', filtered_image)
 
-    print(f'PSNR for {filter_name} = {PSNR(original_image, filtered_image)}')
+    print(f'PSNR for {filter_name} = {PSNR(original_image, filtered_image).round(2)}')
+    print(f'{filter_name} kept {get_mask_size(filter_mask).round(2)}% of the original magnitude')
 
 
-def ideal_notch_reject_filter(image, centers, radii):
+def get_mask_size(mask):
+    height, width = mask.shape[:2]
+    white_count = np.sum(mask)
+    white_percentage = white_count / (height * width)
+    return white_percentage * 100
+
+
+def ideal_notch_reject_filter(image, center, radius):
+    i, j = np.indices(image.shape)
+    y, x = center
+    distance = np.sqrt((i - y) ** 2 + (j - x) ** 2)
+    filter_mask = np.where(distance <= radius, 0, 1)
+    return filter_mask
+
+
+def ideal_notch_reject_filters(image, centers, radii):
     middle_y, middle_x = get_middle(image)
-    i, j = np.indices(magnitude.shape, sparse=True)
+    i, j = np.indices(magnitude.shape)
     filter_mask = np.ones(magnitude.shape)
     for center, radius in zip(centers, radii):
         y, x = center
         y_inverse = 2 * middle_y - y
         x_inverse = 2 * middle_x - x
-        distance = np.sqrt((i - y) ** 2 + (j - x) ** 2)
-        distance_inverse = np.sqrt((i - y_inverse) ** 2 + (j - x_inverse) ** 2)
-        filter_mask *= np.where(distance <= radius, 0, 1)
-        filter_mask *= np.where(distance_inverse <= radius, 0, 1)
+        filter_mask *= ideal_notch_reject_filter(image, center, radius)
+        filter_mask *= ideal_notch_reject_filter(image, (y_inverse, x_inverse), radius)
     return filter_mask
 
 
 def ideal_lowpass_filter(image, radius):
     middle_y, middle_x = get_middle(image)
-    lowpass_filter = 1 - ideal_notch_reject_filter(image, ((middle_y, middle_x),), (radius,))
+    lowpass_filter = 1 - ideal_notch_reject_filter(image, (middle_y, middle_x), radius)
     return lowpass_filter
 
 
@@ -65,8 +79,8 @@ def ideal_band_reject_filter(image, radii):
     filter_mask = np.zeros(magnitude.shape)
     for inner_radius, outer_radius in radii:
         middle_y, middle_x = get_middle(image)
-        inner_filter_mask = ideal_notch_reject_filter(image, ((middle_y, middle_x),), (inner_radius,))
-        outer_filter_mask = ideal_notch_reject_filter(image, ((middle_y, middle_x),), (outer_radius,))
+        inner_filter_mask = ideal_notch_reject_filter(image, (middle_y, middle_x), inner_radius)
+        outer_filter_mask = ideal_notch_reject_filter(image, (middle_y, middle_x), outer_radius)
         band_filter_mask = inner_filter_mask - outer_filter_mask
         filter_mask += band_filter_mask
     return 1 - filter_mask
