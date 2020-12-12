@@ -38,6 +38,7 @@ def evaluate_filter(filter_mask, filter_name):
 
     print(f'PSNR for {filter_name} = {PSNR(original_image, filtered_image).round(2)}')
     print(f'{filter_name} kept {get_mask_size(filter_mask).round(2)}% of the original magnitude')
+    print(f'Contrast for {filter_name} = {filtered_image.std()}')
 
 
 def get_mask_size(mask):
@@ -69,7 +70,9 @@ def ideal_notch_reject_filters(image, centers, radii):
 
 def ideal_lowpass_filter(image, radius):
     middle_y, middle_x = get_middle(image)
-    lowpass_filter = 1 - ideal_notch_reject_filter(image, (middle_y, middle_x), radius)
+    center = (middle_y, middle_x)
+    lowpass_filter = 1 - ideal_notch_reject_filter(image, center, radius)
+
     return lowpass_filter
 
 
@@ -77,8 +80,9 @@ def ideal_band_reject_filter(image, radii):
     filter_mask = np.zeros(magnitude.shape)
     for inner_radius, outer_radius in radii:
         middle_y, middle_x = get_middle(image)
-        inner_filter_mask = ideal_notch_reject_filter(image, (middle_y, middle_x), inner_radius)
-        outer_filter_mask = ideal_notch_reject_filter(image, (middle_y, middle_x), outer_radius)
+        center = (middle_y, middle_x)
+        inner_filter_mask = ideal_notch_reject_filter(image, center, inner_radius)
+        outer_filter_mask = ideal_notch_reject_filter(image, center, outer_radius)
         band_filter_mask = inner_filter_mask - outer_filter_mask
         filter_mask += band_filter_mask
     return 1 - filter_mask
