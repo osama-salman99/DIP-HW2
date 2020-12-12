@@ -57,7 +57,6 @@ def ideal_notch_reject_filter(image, center, radius):
 
 def ideal_notch_reject_filters(image, centers, radii):
     middle_y, middle_x = get_middle(image)
-    i, j = np.indices(magnitude.shape)
     filter_mask = np.ones(magnitude.shape)
     for center, radius in zip(centers, radii):
         y, x = center
