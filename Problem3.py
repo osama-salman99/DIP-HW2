@@ -50,7 +50,6 @@ def get_mask_size(mask):
     return white_percentage * 100
 
 
-
 def get_magnitude_percentage(original, filtered):
     return 100 * (filtered.sum() / original.sum())
 
